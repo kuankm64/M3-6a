@@ -37,8 +37,8 @@ jobs:
     # FIX: Purges any broken local cache/lockfile and forces a clean Linux binary download
     - name: Terraform Init (Validation Mode)
       id: init
-      run: |
-        rm -rf .terraform .terraform.lock.hcl
+      run: 
+    # rm -rf .terraform .terraform.lock.hcl
         terraform init -upgrade -no-color
 
     - name: Terraform fmt
