@@ -3,7 +3,7 @@
 terraform {
   backend "s3" {
     bucket = "sctp-ce12-tfstate-bucket"
-    key    = "kuankm/m3-6.tfstate" #Change the value of this to <your suggested name>
+    key    = "kuankm/m3-6a.tfstate" #Change the value of this to <your suggested name>
     region = "ap-southeast-1"
   }
 }
