@@ -27,3 +27,8 @@ resource "aws_iam_role" "iam_for_lambda" {
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
 
 }
+
+resource "aws_iam_policy" "cloudwatch_policy" {
+  name        = "cloudwatch-inline-policy"
+  policy      = data.aws_iam_policy_document.inline_policy_cloudwatch.json 
+}
