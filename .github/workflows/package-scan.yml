@@ -89,7 +89,22 @@ jobs:
         run: snyk iac test --severity-threshold=high
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+# testing snyk container scan
+      - name: Build Docker image for Snyk Container Test
+        run: |
+          if [ -f Dockerfile ]; then
+            docker build -t snyk-image .
+          else
+            echo "No Dockerfile found, skipping image build."
+          fi
 
+      - name: Snyk Container Test
+        run: |
+          if [ -f Dockerfile ]; then
+            snyk container test "snyk-image" --severity-threshold=high --policy-path=.snyk
+          else
+            echo "No Dockerfile found, skipping Container scan."
+          fi
   terraform-create:
     needs: [package-scan-npm-audit, snyk-scans]
     if: ${{ github.ref == 'refs/heads/main' }}
