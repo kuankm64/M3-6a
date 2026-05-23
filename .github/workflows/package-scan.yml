@@ -24,7 +24,7 @@ jobs:
       uses: hashicorp/setup-terraform@v3
 
     - name: Terraform Init
-      run: terraform init -upgrade -no-color
+      run: terraform init -backend=false -upgrade -no-color
 
     - name: Terraform fmt
       id: fmt
