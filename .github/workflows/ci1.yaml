@@ -43,8 +43,7 @@ jobs:
 
       # FIX: Purges any broken local cache/lockfile and forces a clean Linux binary download
     - name: Terraform Init
-      run: 
-        terraform init -upgrade -no-color
+      run: terraform init -upgrade -no-color
     
     - name: Show Terraform Directory
       run: |
