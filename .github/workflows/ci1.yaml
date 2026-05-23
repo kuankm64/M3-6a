@@ -30,14 +30,17 @@ jobs:
       # Verify Terraform version
       - name: Terraform Version
         run: terraform version
+      
+        # Terraform initialization
+      - name: Terraform Init
+        run: terraform init -upgrade -no-color
+      
 
       # Terraform formatting check
       - name: Terraform Format
         run: terraform fmt -check -recursive
 
-      # Terraform initialization
-      - name: Terraform Init
-        run: terraform init -upgrade -no-color
+      
 
       # Debug providers and folders
       - name: Debug Terraform Directory
