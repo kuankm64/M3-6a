@@ -31,14 +31,14 @@ jobs:
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
       with:
-        terraform_version: "1.14.6"
+        terraform_version: "1.15.4"
         terraform_wrapper: false 
 
     # FIX: Purges any broken local cache/lockfile and forces a clean Linux binary download
     - name: Terraform Init (Validation Mode)
       id: init
-      run: 
-    # rm -rf .terraform .terraform.lock.hcl
+      run: |
+        rm -rf .terraform .terraform.lock.hcl
         terraform init -upgrade -no-color
 
     - name: Terraform fmt
