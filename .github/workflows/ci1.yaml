@@ -38,7 +38,7 @@ jobs:
     - name: Terraform Init (Validation Mode)
       id: init
       run: |
-        rm -rf .terraform .terraform.lock.hcl
+        rm -rf .terraform
         terraform init -upgrade -no-color
 
     - name: Terraform fmt
