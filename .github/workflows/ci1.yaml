@@ -1,0 +1,134 @@
+name: CI Checks
+run-name: Running Terraform Checks by ${{ github.actor }}
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  Initial-Checks:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Getting initiator name
+      run: echo "Workflow initiated by ${{ github.actor }} from branch ${{ github.ref_name }}"
+
+  terraform-checks:
+    runs-on: ubuntu-latest
+    needs: Initial-Checks
+    outputs:
+      status: ${{ job.status }}
+    
+    defaults:
+      run:
+        working-directory: .
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: "1.14.6"
+        terraform_wrapper: false 
+
+    # FIX: Purges any broken local cache/lockfile and forces a clean Linux binary download
+    - name: Terraform Init (Validation Mode)
+      id: init
+      run: |
+        rm -rf .terraform .terraform.lock.hcl
+        terraform init -upgrade -no-color
+
+    - name: Terraform fmt
+      id: fmt
+      run: terraform fmt -check
+
+    - name: Terraform Validate
+      id: validate
+      run: terraform validate -no-color
+
+    - uses: terraform-linters/setup-tflint@v3
+      with:
+        tflint_version: latest
+    
+    - name: Show version
+      run: tflint --version
+
+    - name: Init TFLint
+      run: tflint --init
+
+    - name: Run TFLint
+      run: tflint -f compact
+
+  snyk-checks:
+    runs-on: ubuntu-latest
+    needs: Initial-Checks
+    outputs:
+      status: ${{ job.status }}
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Setup Snyk CLI
+      uses: snyk/actions/setup@master
+
+    # 1. Snyk Code Test (Static Application Security Testing / SAST)
+    - name: Snyk Code Test
+      run: snyk code test
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+    # 2. Snyk Test (Open Source Software Vulnerabilities & License Compliance)
+    - name: Snyk Open Source Test
+      run: snyk test
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+    # 3. Snyk IaC Test (Infrastructure as Code security compliance for Terraform)
+    - name: Snyk IaC Test
+      run: snyk iac test
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+    # 4. Build Docker Image (Safely skips if no Dockerfile is found in root)
+    - name: Build Docker Image
+      run: |
+        if [ -f Dockerfile ]; then
+          docker build -t "snyk-image" .
+        else
+          echo "No Dockerfile found, skipping Docker build step."
+        fi
+          
+    # 5. Snyk Container Test (Scans image layers for OS level vulnerabilities)
+    - name: Snyk Container Test
+      run: |
+        if [ -f Dockerfile ]; then
+          snyk container test "snyk-image"
+        else
+          echo "No Dockerfile found, skipping Container scan."
+        fi
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+  summary:
+    needs: [terraform-checks, snyk-checks]
+    runs-on: ubuntu-latest
+    if: always() # Forces execution even if compilation maps or upstream checks fail
+    steps:
+      - name: Adding markdown
+        run: |
+          TF_STATUS="${{ needs.terraform-checks.result }}"
+          SNYK_STATUS="${{ needs.snyk-checks.result }}"
+
+          echo '## 🚀 Preparing Build Summary 🚀' >> $GITHUB_STEP_SUMMARY
+          echo '' >> $GITHUB_STEP_SUMMARY
+
+          echo "| Job Name        | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----------------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| tf-check        | $TF_STATUS |" >> $GITHUB_STEP_SUMMARY
+          echo "| snyk-check      | $SNYK_STATUS |" >> $GITHUB_STEP_SUMMARY
+          echo '' >> $GITHUB_STEP_SUMMARY
+
+          echo '## Job ran by: ${{ github.actor }}' >> $GITHUB_STEP_SUMMARY
