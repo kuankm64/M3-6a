@@ -105,6 +105,8 @@ jobs:
           else
             echo "No Dockerfile found, skipping Container scan."
           fi
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
   terraform-create:
     needs: [package-scan-npm-audit, snyk-scans]
     if: ${{ github.ref == 'refs/heads/main' }}
