@@ -1,0 +1,40 @@
+# Snyk policy file
+version: v1.25.0
+ignore:
+  # Minimatch, Brace-Expansion, Picomatch, and Tar dependencies inside global npm tool
+  SNYK-JS-BRACEEXPANSION-15789759:
+    - '* > npm > *':
+        reason: 'Inherent to global npm CLI utility; no upstream patch bundled yet.'
+        expires: 2027-12-31
+  SNYK-JS-ISAACSBRACEEXPANSION-15208653:
+    - '* > npm > *':
+        reason: 'Inherent to global npm CLI utility; no upstream patch bundled yet.'
+        expires: 2027-12-31
+  SNYK-JS-MINIMATCH-15309438:
+    - '* > npm > *':
+        reason: 'Inherent to global npm CLI utility; no upstream patch bundled yet.'
+        expires: 2027-12-31
+  SNYK-JS-MINIMATCH-15353387:
+    - '* > npm > *':
+        reason: 'Inherent to global npm CLI utility; no upstream patch bundled yet.'
+        expires: 2027-12-31
+  SNYK-JS-MINIMATCH-15353389:
+    - '* > npm > *':
+        reason: 'Inherent to global npm CLI utility; no upstream patch bundled yet.'
+        expires: 2027-12-31
+  SNYK-JS-PICOMATCH-15765511:
+    - '* > npm > *':
+        reason: 'Inherent to global npm CLI utility; no upstream patch bundled yet.'
+        expires: 2027-12-31
+  SNYK-JS-TAR-15307072:
+    - '* > npm > *':
+        reason: 'Inherent to global npm CLI utility; no upstream patch bundled yet.'
+        expires: 2027-12-31
+  SNYK-JS-TAR-15416075:
+    - '* > npm > *':
+        reason: 'Inherent to global npm CLI utility; no upstream patch bundled yet.'
+        expires: 2027-12-31
+  SNYK-JS-TAR-15456201:
+    - '* > npm > *':
+        reason: 'Inherent to global npm CLI utility; no upstream patch bundled yet.'
+        expires: 2027-12-31
