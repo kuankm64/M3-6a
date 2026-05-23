@@ -123,7 +123,7 @@ jobs:
     - name: Snyk Container Test
       run: |
         if [ -f Dockerfile ]; then
-          snyk container test "snyk-image" --severity-threshold=high
+          snyk container test "snyk-image" --severity-threshold=high --policy-path=.snyk
         else
           echo "No Dockerfile found, skipping Container scan."
         fi
