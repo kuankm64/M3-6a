@@ -32,16 +32,28 @@ jobs:
       uses: hashicorp/setup-terraform@v3
       with:
         terraform_version: latest
-       
-
-    # FIX: Purges any broken local cache/lockfile and forces a clean Linux binary download
-    - name: Terraform Init
-      run: 
-        terraform init -no-color
-
+        terraform_wrapper: false # Disables automatic tfenv shims to ensure direct binary usage
+    
+    - name: Show Terraform version
+      run: terraform -version  
+    
     - name: Terraform fmt
       id: fmt
       run: terraform fmt -check
+
+      # FIX: Purges any broken local cache/lockfile and forces a clean Linux binary download
+    - name: Terraform Init
+      run: 
+        terraform init -upgrade -no-color
+    
+    - name: Show Terraform Directory
+      run: |
+          pwd
+          ls -la
+          ls -la .terraform
+          find .terraform
+
+    
 
     - name: Terraform Validate
       id: validate
