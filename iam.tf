@@ -29,6 +29,12 @@ resource "aws_iam_role" "iam_for_lambda" {
 }
 
 resource "aws_iam_policy" "cloudwatch_policy" {
-  name        = "cloudwatch-inline-policy"
-  policy      = data.aws_iam_policy_document.inline_policy_cloudwatch.json 
+  name   = "cloudwatch-inline-policy"
+  policy = data.aws_iam_policy_document.inline_policy_cloudwatch.json
+}
+
+# Attach the policy to the role to satisfy TFLint and complete your deployment setup
+resource "aws_iam_role_policy_attachment" "lambda_logs" {
+  role       = aws_iam_role.iam_for_lambda.name
+  policy_arn = aws_iam_policy.cloudwatch_policy.arn
 }
